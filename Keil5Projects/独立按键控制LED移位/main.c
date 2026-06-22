@@ -1,0 +1,51 @@
+#include <REGX52.H>
+#include <INTRINS.H>
+
+#define LED P2
+#define KEY P3_1
+
+#define LED_ON 0
+#define LED_OFF 1
+#define PRESSED 0
+
+#define LED_COUNT 8
+
+void Delay(unsigned int xms)	//@11.0592MHz
+{
+	unsigned char data i, j;
+
+	while(xms--)
+	{
+		_nop_();
+		i = 2;
+		j = 199;
+		do
+		{
+			while (--j);
+		} while (--i);
+	}
+}
+
+
+void main()
+{
+	unsigned char LEDNum = 0;
+	while(1)
+	{
+		LED = ~(0x01<<LEDNum);
+		if(KEY == PRESSED)
+		{
+			Delay(20);
+			if(KEY == PRESSED)
+			{
+				while(KEY == PRESSED);
+				Delay(20);
+				
+				LEDNum++;
+				if(LEDNum>=LED_COUNT)
+					LEDNum = 0;
+				
+			}
+		}
+	}
+}
