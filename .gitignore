@@ -1,0 +1,37 @@
+# Keil5 项目 .gitignore
+*.uvguix.*
+*.uvgui.*
+*.uvopt
+*.uvoptx
+*.Administrator
+*.scvd
+JLinkLog.txt
+*.bin
+Objects/
+Listings/
+*.lst
+*.m51
+*.obj
+*.i
+*.htm
+*.lnp
+*.iex
+*.d
+*.crf
+*.o
+*.axf
+*.elf
+*.hex
+*.plg
+*.dep
+*.bak
+*.Orig
+*.Tra
+RTE/
+DebugConfig/
+
+# 通用
+.vs/
+.vscode/
+Thumbs.db
+Desktop.ini
