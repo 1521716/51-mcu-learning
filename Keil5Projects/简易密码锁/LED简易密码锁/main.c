@@ -29,7 +29,7 @@ void Delay(unsigned int xms)	//@11.0592MHz
 	}
 }
 
-//待机状态
+//????
 void LED_SlowBlink()
 {
 	unsigned int time = 500;
@@ -59,7 +59,7 @@ void LED_SlowBlink()
 	}
 }
 
-//密码错误
+//????
 void LED_QuickBlink()
 {
 	LED = LED_ON;
@@ -73,27 +73,28 @@ void main()
 	
 	while(1)
 	{
-		//简易计时器
+		//?????
 		unsigned int timer = 0;
-		//按键次数
+		//????
 		unsigned char key_count = 0;
 		
-		//待机状态
+		//????
 		LED_SlowBlink();
 		
-		//如果按动按键
+		//??????
 		if(KEY == PRESSED)
 		{
-			Delay(20);//消抖
+			Delay(20);//??
 			if(KEY == PRESSED)
 			{
 				while(KEY == PRESSED){};
 				Delay(20);
-				key_count++;//有效按动
+				key_count++;//????
+				
 				while(KEY == PRESSED){};
 				Delay(20);
 
-				//计时5秒
+				//??5?
 				while(timer<MAXTIME1)
 				{
 					if(KEY == PRESSED)
@@ -108,7 +109,7 @@ void main()
 							}
 							if(timer>MAXTIME1)
 								break;
-							key_count++;//有效按动
+							key_count++;//????
 							Delay(20);
 							timer+=20;
 						}
@@ -122,15 +123,15 @@ void main()
 					Delay(1);
 					timer++;
 				}
-				//判断密码是否正确
-				if(key_count != PASSWORD)//密码错误 
+				//????????
+				if(key_count != PASSWORD)//???? 
 				{
 					unsigned char i = 0;
 					for(i = 0;i<10;i++)
 						LED_QuickBlink();
 					continue;
 				}
-				else//密码正确
+				else//????
 				{
 					unsigned char i = 0;
 					for(i = 0;i<3;i++)
