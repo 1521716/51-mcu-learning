@@ -182,8 +182,7 @@ void main()
 			}
 			case 2:
 			{
-				//重置时间迭代器（重新设置一个也可以）
-				timer = 0;
+				//重置时间迭代器				timer = 0;
 				LED = 0x00;
 				key_count = 0;
 				P2 = 0x00;//LED常亮
