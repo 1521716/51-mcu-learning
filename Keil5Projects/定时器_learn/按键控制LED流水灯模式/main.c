@@ -8,7 +8,7 @@ unsigned char KeyNumber,LEDMode;
 
 void main()
 {
-	P2 = 0xFE;
+	P2 = 0xFE;				//初始化LED
 	Timer0_Init();
 	while(1)
 	{
