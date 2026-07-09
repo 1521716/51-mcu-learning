@@ -37,7 +37,7 @@ void Delay(unsigned int xms)	//@11.0592MHz
 
 void Nixie(unsigned char Location,unsigned char Number)
 {
-	LED = 0x00;
+	LED = 0x00;//ÏûÓ° 
 	switch(Location)
 	{
 		case 1:P2_4 = 1;P2_3 = 1;P2_2 = 1;break;

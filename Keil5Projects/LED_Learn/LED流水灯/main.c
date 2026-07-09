@@ -27,8 +27,8 @@ void main()
 	{
 		for(i = 0; i < 8; i++) 
 		{
-       P2 = ~(0x01 << i);  
-       Delay1ms(500);
+       		P2 = ~(0x01 << i);  
+       		Delay1ms(500);
 		}
 	}
 	
