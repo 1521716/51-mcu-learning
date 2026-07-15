@@ -335,7 +335,7 @@
             <DataOverlaying>1</DataOverlaying>
             <OverlayString></OverlayString>
             <MiscControls></MiscControls>
-            <DisableWarningNumbers></DisableWarningNumbers>
+            <DisableWarningNumbers>16</DisableWarningNumbers>
             <LinkerCmdFile></LinkerCmdFile>
             <Assign></Assign>
             <ReserveString></ReserveString>
@@ -369,26 +369,6 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>UART.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\UART.c</FilePath>
-            </File>
-            <File>
-              <FileName>UART.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\UART.h</FilePath>
-            </File>
-            <File>
-              <FileName>parse_command.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\parse_command.c</FilePath>
-            </File>
-            <File>
-              <FileName>parse_command.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\parse_command.h</FilePath>
-            </File>
-            <File>
               <FileName>Delay.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Delay.c</FilePath>
@@ -397,6 +377,46 @@
               <FileName>Delay.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Delay.h</FilePath>
+            </File>
+            <File>
+              <FileName>LCD1602.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\LCD1602.c</FilePath>
+            </File>
+            <File>
+              <FileName>LCD1602.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\LCD1602.h</FilePath>
+            </File>
+            <File>
+              <FileName>I2C.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\I2C.c</FilePath>
+            </File>
+            <File>
+              <FileName>I2C.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\I2C.h</FilePath>
+            </File>
+            <File>
+              <FileName>AT24C02.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\AT24C02.c</FilePath>
+            </File>
+            <File>
+              <FileName>AT24C02.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\AT24C02.h</FilePath>
+            </File>
+            <File>
+              <FileName>Key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Key.c</FilePath>
+            </File>
+            <File>
+              <FileName>Key.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Key.h</FilePath>
             </File>
           </Files>
         </Group>

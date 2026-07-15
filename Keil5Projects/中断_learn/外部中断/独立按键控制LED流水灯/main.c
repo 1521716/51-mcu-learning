@@ -24,7 +24,7 @@ void Timer0_Init()
 
 void INT0_Init()
 {
-	IT0 = 0;//由下降沿触发中断
+	IT0 = 1;//由下降沿触发中断
 	EX0 = 1;//允许INT0外部中断
 	EA = 1;
 }

@@ -335,7 +335,7 @@
             <DataOverlaying>1</DataOverlaying>
             <OverlayString></OverlayString>
             <MiscControls></MiscControls>
-            <DisableWarningNumbers></DisableWarningNumbers>
+            <DisableWarningNumbers>16</DisableWarningNumbers>
             <LinkerCmdFile></LinkerCmdFile>
             <Assign></Assign>
             <ReserveString></ReserveString>
@@ -369,34 +369,14 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>UART.c</FileName>
+              <FileName>I2C.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\UART.c</FilePath>
+              <FilePath>.\I2C.c</FilePath>
             </File>
             <File>
-              <FileName>UART.h</FileName>
+              <FileName>I2C.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\UART.h</FilePath>
-            </File>
-            <File>
-              <FileName>parse_command.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\parse_command.c</FilePath>
-            </File>
-            <File>
-              <FileName>parse_command.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\parse_command.h</FilePath>
-            </File>
-            <File>
-              <FileName>Delay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Delay.c</FilePath>
-            </File>
-            <File>
-              <FileName>Delay.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Delay.h</FilePath>
+              <FilePath>.\I2C.h</FilePath>
             </File>
           </Files>
         </Group>

@@ -14,7 +14,7 @@ void parse_command(unsigned char *cmd)
 	else if(strstr(cmd,"LED2 OFF"))
 		LED2 = LED_OFF;
 	else if(strstr(cmd,"STATUS"))
-		printf("LED1=%s\r\nLED2=%s\r\n",LED1?"OFF":"ON",LED2?"OFF":"ON");
+		printf("LED1=%s\r\nLED2=%s\r\n",LED1==LED_ON?"ON":"OFF",LED2==LED_ON?"ON":"OFF");
 	else
 		printf("%s\r\n","The command is error!");
 }

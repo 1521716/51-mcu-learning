@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "UART.h"
+#include "Delay.h"
 #include "parse_command.h"
 
 unsigned char rx_buf[32];
@@ -17,6 +18,7 @@ void main()
 		{
 			cmd_ready = 0;
 			parse_command(rx_buf);
+			Delay(1);
 		}
 	}
 }
@@ -28,17 +30,16 @@ void UART_ISR()	interrupt 4
 		unsigned char ch = SBUF;
 		RI = 0;
 		
-		if(ch == '\n'||ch == '\r')
+		if(ch == '\n')
 		{
 			rx_buf[rx_index] = '\0';
 			rx_index = 0;
 			cmd_ready = 1;
 		}
-		else
+		else if(ch != '\r')
 		{
 			if(rx_index>=30)	return;//防止溢出
 			rx_buf[rx_index++] = ch;
-			
 		}
 	}
 }
