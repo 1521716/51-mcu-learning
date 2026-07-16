@@ -2,9 +2,13 @@
 #include "UART.h"
 #include "Delay.h"
 #include "Timer0.h"
+
 #define LED P0
 
 volatile unsigned char Sec = 0,Min = 0,Hou = 0;
+unsigned char str_cmd[30];
+unsigned char index = 0;
+bit flag = 0;
 
 unsigned char code smg_duan[] = {
 	0x3F, // 0: 00111111
@@ -45,48 +49,13 @@ void main()
 	UART_Init();
 	while(1)
 	{
+		if(flag)
+		{
+			flag = 0;
+			prase_cmd(str_cmd);
+		}
 		NiXie(1,Hou/10);Delay(1);NiXie(2,Hou%10);Delay(1);NiXie(4,Min/10);Delay(1);
 		NiXie(5,Min%10);Delay(1);NiXie(7,Sec/10);Delay(1);NiXie(8,Sec%10);Delay(1);
 		NiXie(3,10);Delay(1);NiXie(6,10);Delay(1);
-	}
-}
-
-void Timer0_ISR()	interrupt 1
-{
-	static unsigned char Timer0Count = 0;
-	TL0 = (65536-50000)%256;
-	TH0 = (65536-50000)/256;
-	Timer0Count++;
-	if(Timer0Count>=20)
-	{
-		Timer0Count = 0;
-		Sec++;
-		if(Sec>=60)
-		{
-			Sec = 0;
-			Min++;
-			if(Min>=60)
-			{
-				Min = 0;
-				Hou++;
-				if(Hou>=24)
-				{
-					Hou = 0;
-				}
-			}
-		}
-	}
-}
-
-void UART_ISR()	interrupt 4
-{
-	unsigned char temp = 0;
-	if(RI == 1)
-	{
-		temp = SBUF;
-		RI = 0;
-		SBUF = temp;
-		while(TI == 0);
-		TI = 0;
 	}
 }

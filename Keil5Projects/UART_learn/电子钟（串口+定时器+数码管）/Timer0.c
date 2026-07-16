@@ -1,4 +1,5 @@
 #include <REGX52.H>
+#include "UART.h"
 
 void Timer0_Init()
 {
@@ -10,7 +11,6 @@ void Timer0_Init()
 	ET0 = 1;
 }
 
-/*
 void Timer0_ISR()	interrupt 1
 {
 	static unsigned char Timer0Count = 0;
@@ -37,4 +37,3 @@ void Timer0_ISR()	interrupt 1
 		}
 	}
 }
-*/

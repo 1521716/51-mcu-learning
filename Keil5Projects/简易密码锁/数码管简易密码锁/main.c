@@ -47,10 +47,10 @@ void Status_Standby()
 	unsigned char i = 1;
 	while(KEY != PRESSED)
 	{
+		LED = 0x00;
 		SelectLED(i++);
 		LED = 0x40;
 		Delay(1);
-		LED = 0x00;
 		if(i == 5) i = 1;
 	}
 	
@@ -134,14 +134,12 @@ void main()
 					//没有按按键，则动态扫描数码管，显示已按次数
 					if(KEY != PRESSED)
 					{
-						
+						LED = 0x00;
 						SelectLED(i++);
 						if(i > key_count) i = 1;
 						LED = 0x40;
 						Delay(1);
-						LED = 0x00;
 						timer++;
-						
 					}
 					else
 					{
@@ -182,7 +180,8 @@ void main()
 			}
 			case 2:
 			{
-				//重置时间迭代器				timer = 0;
+				//重置时间迭代器（重新设置一个也可以）
+				timer = 0;
 				LED = 0x00;
 				key_count = 0;
 				P2 = 0x00;//LED常亮

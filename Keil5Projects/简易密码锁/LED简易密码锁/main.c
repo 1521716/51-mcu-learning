@@ -29,7 +29,7 @@ void Delay(unsigned int xms)	//@11.0592MHz
 	}
 }
 
-//´ý»ú×´Ì¬ 
+//????
 void LED_SlowBlink()
 {
 	unsigned int time = 500;
@@ -59,7 +59,7 @@ void LED_SlowBlink()
 	}
 }
 
-//¿ìÉÁ 
+//????
 void LED_QuickBlink()
 {
 	LED = LED_ON;
