@@ -53,7 +53,7 @@ void main()
 	while(1)
 	{
 		KeyNumber = Key();
-		if(KeyNumber>0&&KeyNumber<=9)
+		if(KeyNumber>0&&KeyNumber<=10)
 		{
 			if(Count>=4)
 				;
@@ -64,34 +64,32 @@ void main()
 		else if(KeyNumber == 11)
 		{
 			unsigned char i = 0;
-			if(flag)//密码刚刚已经正确，现在设置密码
+			if(flag)  // 已验证，这次输入的是新密码
 			{
 				flag = 0;
-				AT24C02_SendByte(0,Input[0]);Delay(5);
-				AT24C02_SendByte(1,Input[1]);Delay(5);
-				AT24C02_SendByte(2,Input[2]);Delay(5);
-				AT24C02_SendByte(3,Input[3]);Delay(5);
-			}
-			for(i = 0;i<4;i++)
-			{
-				if(PASSWORD[i] != Input[i])
-					break;
-			}
-			if(i == 4)	flag = 1;
-			if(flag == 0)
-					printf("%s","The PassWord is error");
-			else
-			{
-				printf("%s","Please input new Code");
-				Count = 0;
 				for(i = 0;i<4;i++)
 				{
-					Input[i] = 0;
+					PASSWORD[i] = Input[i];        // 更新RAM，别只写EEPROM
+					AT24C02_SendByte(i,Input[i]);Delay(5);
 				}
-				
+				printf("%s","New password saved");
+				Count = 0;
+				for(i = 0;i<4;i++) Input[i] = 0;
 			}
-			
-			
+			else      // 验证旧密码
+			{
+				for(i = 0;i<4;i++)
+					if(PASSWORD[i] != Input[i]) break;
+				if(i == 4)
+				{
+					flag = 1;
+					printf("%s","Please input new Code");
+					Count = 0;
+					for(i = 0;i<4;i++) Input[i] = 0;
+				}
+				else
+					printf("%s","The PassWord is error");
+			}	
 		}
 		else if(KeyNumber == 12)
 		{
