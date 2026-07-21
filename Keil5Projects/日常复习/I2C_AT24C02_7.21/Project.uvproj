@@ -14,7 +14,7 @@
       <TargetOption>
         <TargetCommonOption>
           <Device>AT89C52</Device>
-          <Vendor>Atmel</Vendor>
+          <Vendor>Microchip</Vendor>
           <Cpu>IRAM(0-0xFF) IROM(0-0x1FFF) CLOCK(24000000)</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile>"LIB\STARTUP.A51" ("Standard 8051 Startup Code")</StartupFile>
@@ -370,44 +370,24 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>LCD1602.c</FileName>
+              <FileName>I2C.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\LCD1602.c</FilePath>
+              <FilePath>.\I2C.c</FilePath>
             </File>
             <File>
-              <FileName>LCD1602.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\LCD1602.h</FilePath>
-            </File>
-            <File>
-              <FileName>OneWire.c</FileName>
+              <FileName>AT24C02.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\OneWire.c</FilePath>
+              <FilePath>.\AT24C02.c</FilePath>
             </File>
             <File>
-              <FileName>OneWire.h</FileName>
+              <FileName>AT24C02.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\OneWire.h</FilePath>
+              <FilePath>.\AT24C02.h</FilePath>
             </File>
             <File>
-              <FileName>DS18B20.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\DS18B20.c</FilePath>
-            </File>
-            <File>
-              <FileName>DS18B20.h</FileName>
+              <FileName>I2C.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\DS18B20.h</FilePath>
-            </File>
-            <File>
-              <FileName>Delay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Delay.c</FilePath>
-            </File>
-            <File>
-              <FileName>Delay.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Delay.h</FilePath>
+              <FilePath>.\I2C.h</FilePath>
             </File>
           </Files>
         </Group>
