@@ -1,18 +1,3 @@
-/******************************************************************************
- * 智能环境监测与控制系统
- *
- * 功能：
- *   1. DS18B20每2秒采集温度，LCD1602实时显示
- *   2. 温度阈值管理（默认上限35.0°C / 下限5.0°C），EEPROM掉电保存
- *   3. 超限报警：LED闪烁(快慢频闪区分超上下限)
- *   4. 串口远程监控：定时上报 + 接收命令（TH:/TL:/QUERY/HISTORY）
- *   5. 温度历史记录（环形队列，EEPROM存储10笔）
- *
- * 硬件平台：STC89C52RC @ 11.0592MHz
- * 编译器：  Keil C51
- ******************************************************************************/
-
-#include "config.h"
 #include <REGX52.H>
 #include <stdio.h>
 #include <string.h>
@@ -24,94 +9,6 @@
 #include "AT24C02.h"
 #include "Status.h"
 
-/************************* 全局系统状态 ********************************/
-SystemState g_Sys = {
-	0.0,				// temperture	
-	DEFAULT_TH,			// temp_high
-	DEFAULT_TL,			// temp_low
-	STATUS_NORMAL,		// status
-	0,0					// hist_front,hist_tail
-};
-
-unsigned char echo_ch;	// 待回显字符
-bit echo_flag = 0;		// 回显标志
-int val = 0;			// 辅助变量，储存温度
-
-/************************** 函数声明 **********************/
-static void System_Init();					// 系统初始化
-static void Task_UpdateData();				// 温度更新+LCD显示+串口上报
-static void Task_UpdateStatus();			// 阈值判断+报警
-static void Task_SaveHistory();				// 保存温度历史到EEPROM
-static void Task_EchoHandler();				// 串口回显
-static void Task_CmdHandler();				// 串口命令解析	
-
-/**************************** 主函数 *********************************/
-void main()
-{
-	System_Init();
-	
-	while(1)
-	{
-		Task_UpdateData();
-		Task_UpdateStatus();
-		Task_SaveHistory();
-		Task_EchoHandler();
-		Task_CmdHandler();
-	}
-}
-
-/*************************** 函数定义 *********************************/
-/* 系统初始化 */
-static void System_Init()
-{
-	// 外设初始化
-	UART_Init();
-	LCD_Init();
-	Timer0_Init();
-	
-	// 从EEPROM读取阈值
-	g_Sys.temp_high = AT24C02_ReadByte(EE_ADDR_TH);
-	g_Sys.temp_low = AT24C02_ReadByte(EE_ADDR_TL);
-	
-	// 阈值合法性校验：上限>下限,且在合理预设范围（此为0-60）
-	if(g.Sys.temp_high > 60 || g.Sys.temp_low > 60 ||
-		g.Sys.temp_high <= g.Sys.temp_low)
-	{
-		g_Sys.temp_high = DEFAULT_TH;
-		g_Sys.temp_low = DEFAULT_TL;
-		AT24C02_WriteByte(EE_ADDR_TH,DEFAULT_TH);
-		AT24C02_WriteByte(EE_ADDR_TL,DEFAULT_TL);
-	}
-	
-	// 首次温度读取
-	DS18B20_ConvertT();
-	Delay(1000);
-	g_Sys.temperture = DS18B20_ReadT();
-	
-	// LCD初始显示
-	LCD_ShowString(1,1,"Temp:    C");
-	LCD_ShowString(2,1,"TH:   C  TL:   C");
-	
-	// 初始状态判断
-	if(g_Sys.temperture > g_Sys.temp_high)
-		g_Sys.status = STATUS_HIGH;
-	else if(g.Sys.temptuer < g_Sys.temp_low)
-		g_Sys.status = STATUS_LOW;
-	else 
-		g_Sys.status = STATUS_NORMAL;
-	
-	Alarm_Update(g_Sys.status);
-	
-}
-	
-
-
-
-
-
-
-
-/*
 volatile float T,TH = 35.0,TL = 5.0;
 unsigned char idata rx_buf[20],index = 0,S;
 bit rx_ready = 0;
@@ -119,7 +16,7 @@ bit upData_flag = 0,upStatus_flag = 0,Save_flag = 0;
 unsigned char front = 0,tail = 0;
 int temp_int;					//温度×10的临时变量（Keil C51须在开头声明）
 bit echo_flag = 0;              // 新增：有字节待回显
-unsigned char echo_ch;          // 新增：待回显的字节*/
+unsigned char echo_ch;          // 新增：待回显的字节
 
 
 void main()
