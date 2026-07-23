@@ -1,17 +1,14 @@
 #ifndef __UART_H__
 #define __UART_H__
 
-#define MAXSIZE 11		//环形队列槽位数（最多存10个历史温度）
-#define HISTORY_BASE 40	//历史温度在EEPROM的起始地址（槽0→40,41; 槽1→42,43; ...）
 
+void UART_Init();							// 初始化串口（9600bps）
+void UART_SendByte(unsigned char ch);		// 发送一个字节(主循环调用)
+void UART_ParseCmd(unsigned char *cmd);			// 解析串口命令
 
-extern volatile float T,TH,TL;
-extern unsigned char idata rx_buf[20],index,S;
-extern bit rx_ready;
-extern unsigned char front,tail;
-
-
-void UART_Init();
-void parse_cmd(unsigned char *cmd);
+/* 环形缓冲区（中断与主循环共享） */
+extern unsigned char idata rx_buf[20];
+extern unsigned char rx_index;
+extern bit rx_ready; 
 
 #endif

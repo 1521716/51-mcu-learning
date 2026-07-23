@@ -6,7 +6,7 @@ void OneWire_SendBit(unsigned char Bit);
 unsigned char OneWire_ReceiveBit();
 void OneWire_SendByte(unsigned char Byte);
 unsigned char OneWire_ReceiveByte();
-void DS18B20_CONVERT();
+void DS18B20_ConvertT();
 float DS18B20_ReadT();
 
 #endif

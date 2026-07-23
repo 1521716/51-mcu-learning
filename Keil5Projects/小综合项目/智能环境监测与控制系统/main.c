@@ -22,11 +22,11 @@
 #include "Timer0.h"
 #include "UART.h"
 #include "AT24C02.h"
-#include "Status.h"
+#include "Alarm.h"
 
 /************************* 全局系统状态 ********************************/
 SystemState g_Sys = {
-	0.0,				// temperture	
+	0.0,				// temperature	
 	DEFAULT_TH,			// temp_high
 	DEFAULT_TL,			// temp_low
 	STATUS_NORMAL,		// status
@@ -34,7 +34,7 @@ SystemState g_Sys = {
 };
 
 unsigned char echo_ch;	// 待回显字符
-bit echo_flag = 0;		// 回显标志
+bit flag_echo = 0;		// 回显标志
 int val = 0;			// 辅助变量，储存温度
 
 /************************** 函数声明 **********************/
@@ -74,8 +74,8 @@ static void System_Init()
 	g_Sys.temp_low = AT24C02_ReadByte(EE_ADDR_TL);
 	
 	// 阈值合法性校验：上限>下限,且在合理预设范围（此为0-60）
-	if(g.Sys.temp_high > 60 || g.Sys.temp_low > 60 ||
-		g.Sys.temp_high <= g.Sys.temp_low)
+	if(g_Sys.temp_high > 60 || g_Sys.temp_low > 60 ||
+		g_Sys.temp_high <= g_Sys.temp_low)
 	{
 		g_Sys.temp_high = DEFAULT_TH;
 		g_Sys.temp_low = DEFAULT_TL;
@@ -86,16 +86,16 @@ static void System_Init()
 	// 首次温度读取
 	DS18B20_ConvertT();
 	Delay(1000);
-	g_Sys.temperture = DS18B20_ReadT();
+	g_Sys.temperature = DS18B20_ReadT();
 	
 	// LCD初始显示
 	LCD_ShowString(1,1,"Temp:    C");
 	LCD_ShowString(2,1,"TH:   C  TL:   C");
 	
 	// 初始状态判断
-	if(g_Sys.temperture > g_Sys.temp_high)
+	if(g_Sys.temperature > g_Sys.temp_high)
 		g_Sys.status = STATUS_HIGH;
-	else if(g.Sys.temptuer < g_Sys.temp_low)
+	else if(g_Sys.temperature < g_Sys.temp_low)
 		g_Sys.status = STATUS_LOW;
 	else 
 		g_Sys.status = STATUS_NORMAL;
@@ -104,130 +104,100 @@ static void System_Init()
 	
 }
 	
-
-
-
-
-
-
-
-/*
-volatile float T,TH = 35.0,TL = 5.0;
-unsigned char idata rx_buf[20],index = 0,S;
-bit rx_ready = 0;
-bit upData_flag = 0,upStatus_flag = 0,Save_flag = 0;
-unsigned char front = 0,tail = 0;
-int temp_int;					//温度×10的临时变量（Keil C51须在开头声明）
-bit echo_flag = 0;              // 新增：有字节待回显
-unsigned char echo_ch;          // 新增：待回显的字节*/
-
-
-void main()
+/* 温度更新+LCD显示+串口上报 */
+static void Task_UpdateData()
 {
+	if(!flag_Updatedata)	return;
+	flag_Updatedata = 0;
+	
+	// 温度采集
+	DS18B20_ConvertT();													//启动下次转换
+	g_Sys.temperature = DS18B20_ReadT();								//读取上次转换结果
+	
+	// LCD第一行：当前温度
+	LCD_ShowNum(1,6,(unsigned int)g_Sys.temperature,3);
+	LCD_ShowChar(1,9,'.');
+	LCD_ShowNum(1,10,(unsigned long)(g_Sys.temperature*10)%10,1);
+	
+	// LCD第二行：阈值
+	LCD_ShowNum(2,4,(unsigned int)g_Sys.temp_high,3);
+	LCD_ShowChar(2,7,'.');
+	LCD_ShowNum(2,8,(unsigned long)(g_Sys.temp_high*10)%10,1);
+	LCD_ShowNum(2,12,(unsigned int)g_Sys.temp_low,3);
+	LCD_ShowChar(2,15,'.');
+	LCD_ShowNum(2,16,(unsigned long)(g_Sys.temp_low*10)%10,1);
 
-	UART_Init();
-	DS18B20_CONVERT();
-	TH = AT24C02_ReadByte(20);
-	if(TH>125||TH<-55)	TH = 35.0;
-	TL = AT24C02_ReadByte(21);
-	if(TL>125||TL<-55)	TL = 5.0;
-	AT24C02_WriteByte(20,TH);
-	AT24C02_WriteByte(21,TL);
-	Delay(1000);
-	T = DS18B20_ReadT();
-	LCD_Init();
-	LCD_ShowString(1,1,"Temp:");
-	LCD_ShowString(2,1,"TH:");
-	LCD_ShowString(2,9,"TL:");
-	Timer0_Init();
+	// 串口上报
+	printf("T:%.1f,H:%.1f,L:%.1f",
+			g_Sys.temperature,g_Sys.temp_high,g_Sys.temp_low);			
+}
 
+/* 阈值判断+串口上报状态+报警（2秒一次） */
+static void Task_UpdateStatus()
+{
+	if(!flag_Updatestatus)	return;
+	flag_Updatestatus = 0;
+	
+	// 判断当前状态
+	if(g_Sys.temperature > g_Sys.temp_high)
+		g_Sys.status = STATUS_HIGH;
+	else if(g_Sys.temperature < g_Sys.temp_low)
+		g_Sys.status = STATUS_LOW;
+	else
+		g_Sys.status = STATUS_NORMAL;
+	
+	//串口发送状态
+	printf("S:%s\n",
+	g_Sys.status == STATUS_NORMAL ? "NORMAL" : 
+	g_Sys.status == STATUS_HIGH ? "HIGH" : "LOW");
+	
+	//触发报警
+	Alarm_Update(g_Sys.status);
+}
 
-	while(1)
+/* 保存历史温度到EEPROM（每2秒一次）
+	环形队列：最多10条，存满覆盖旧纪录 */
+static void Task_SaveHistory()
+{
+	if(!flag_Save)	return;
+	flag_Save = 0;
+	
+	val = (int)(g_Sys.temperature*10);								//温度*10变为16位整数
+	
+	if((g_Sys.hist_tail+1)%MAXSIZE == g_Sys.hist_front)
 	{
-		if(upData_flag)
-		{
-			upData_flag = 0;
-			DS18B20_CONVERT();//更新温度
-			T = DS18B20_ReadT();
-			printf("T:%.1f,H:%.1f,L:%.1f\n",T,TH,TL);//发送状态到电脑
-			LCD_ShowNum(1,6,T,3);
-			LCD_ShowChar(1,9,'.');
-			LCD_ShowNum(1,10,(unsigned long)(T*10)%10,1);
-			LCD_ShowNum(2,4,TH,3);
-			LCD_ShowChar(2,7,'.');
-			LCD_ShowNum(2,8,(unsigned long)(TH*10)%10,1);
-			LCD_ShowNum(2,12,TL,3);
-			LCD_ShowChar(2,15,'.');
-			LCD_ShowNum(2,16,(unsigned long)(TL*10)%10,1);
-		}
-		if(upStatus_flag)
-		{
-			upStatus_flag = 0;
-			if(T<=TH&&T>=TL)	printf("S:NORMAL\n");
-			else if(T<TL)
-			{
-				printf("S:LOW\n");
-				Status_Low();
-
-			}
-			else
-			{
-				printf("S:HIGH\n");
-				Status_High();
-			}
-
-		}
-		if(Save_flag)
-		{
-			Save_flag = 0;
-			temp_int = (int)(T * 10);						//温度×10转16位整数（如25.6→256）
-			if((tail + 1) % MAXSIZE == front)				//队列已满→覆盖最旧数据
-			{
-				AT24C02_WriteInt(HISTORY_BASE + tail * 2, temp_int);
-				tail = front;
-				front = (front + 1) % MAXSIZE;
-			}
-			else											//队列空或不满→正常追加
-			{
-				AT24C02_WriteInt(HISTORY_BASE + tail * 2, temp_int);
-				tail = (tail + 1) % MAXSIZE;
-			}
-		}
-		if(echo_flag)
-		{
-			echo_flag = 0;
-			SBUF = echo_ch;
-			while(TI == 0);   // 忙等挪到主循环，不干扰中断时序
-			TI = 0;
-		}
-
-		if(rx_ready)
-		{
-			rx_ready = 0;
-			parse_cmd(rx_buf);
-		}
-
-
+		// 队列已满，覆盖旧纪录
+		AT24C02_WriteInt(HISTORY_BASE + g_Sys.hist_tail*2,val);
+		g_Sys.hist_tail = g_Sys.hist_front;
+		g_Sys.hist_front = (g_Sys.hist_front+1)%MAXSIZE;
+	}
+	else
+	{
+		// 队列未满，正常追加
+		AT24C02_WriteInt(HISTORY_BASE + g_Sys.hist_tail * 2,val);
+		g_Sys.hist_tail = (g_Sys.hist_tail + 1) % MAXSIZE;
 	}
 }
 
-void Timer0_ISR()	interrupt 1
+/* 串口回显 */
+static void Task_EchoHandler()
 {
-	static unsigned char Timer0_Count = 0;
-	TL0 = (65536-50000)%256;
-	TH0 = (65536-50000)/256;
-	Timer0_Count++;
-	if(Timer0_Count>=40)//每2秒执行一次温度并且向电脑发送
-	{
-
-		Timer0_Count = 0;
-		upData_flag = 1;
-		upStatus_flag = 1;
-		Save_flag = 1;
-
-	}
-	Status_BlinkHandler();
+	if(!flag_echo)	return;
+	flag_echo = 0;
+	
+	UART_SendByte(echo_ch);											// 主循环中发送（忙等在UART_SendByte内部）
 }
+
+/* 串口命令处理 */
+static void Task_CmdHandler()
+{
+	if(!rx_ready)	return;
+	rx_ready = 0;
+	
+	UART_ParseCmd(rx_buf);											// 解析并执行命令
+}
+
+/* UART中断服务函数 */
 void UART_ISR()	interrupt 4
 {
 	unsigned char ch;
@@ -235,22 +205,23 @@ void UART_ISR()	interrupt 4
 	{
 		ch = SBUF;
 		RI = 0;
-		// 不再在 ISR 里回显！改为通知主循环
-          echo_ch = ch;
-          echo_flag = 1;
-
-		if(ch =='\n')
+		
+		// 回显
+		echo_ch = ch;
+		flag_echo = 1;
+		
+		// 接收：以'\n'为结束
+		if(ch == '\n')
 		{
-			rx_buf[index] = '\0';
-			index = 0;
-			rx_ready = 1;
+			rx_buf[rx_index] = '\0';								// 字符串结尾
+			rx_index = 0;
+			rx_ready = 1;											// 通知主循环处理
 		}
 		else
 		{
-			rx_buf[index] = ch;
-			index++;
-			if(index>=19)	return;
+			rx_buf[rx_index] = ch;
+			rx_index++;
+			if(rx_index >= 19)	rx_index = 19;						// 防溢出，丢弃超长数据
 		}
 	}
-
 }

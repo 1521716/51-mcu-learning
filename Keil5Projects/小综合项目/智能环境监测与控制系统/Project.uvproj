@@ -365,9 +365,9 @@
           <GroupName>Source Group 1</GroupName>
           <Files>
             <File>
-              <FileName>DS18B20.h</FileName>
+              <FileName>config.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\DS18B20.h</FilePath>
+              <FilePath>.\config.h</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -378,6 +378,11 @@
               <FileName>DS18B20.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\DS18B20.c</FilePath>
+            </File>
+            <File>
+              <FileName>DS18B20.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\DS18B20.h</FilePath>
             </File>
             <File>
               <FileName>Delay.c</FileName>
@@ -440,19 +445,14 @@
               <FilePath>.\AT24C02.h</FilePath>
             </File>
             <File>
-              <FileName>Status.c</FileName>
+              <FileName>Alarm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Status.c</FilePath>
+              <FilePath>.\Alarm.c</FilePath>
             </File>
             <File>
-              <FileName>Status.h</FileName>
+              <FileName>Alarm.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Status.h</FilePath>
-            </File>
-            <File>
-              <FileName>config.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\config.h</FilePath>
+              <FilePath>.\Alarm.h</FilePath>
             </File>
           </Files>
         </Group>
