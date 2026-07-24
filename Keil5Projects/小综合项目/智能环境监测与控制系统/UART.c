@@ -79,7 +79,7 @@ void UART_ParseCmd(unsigned char *cmd)
 			i++;
 		}
 		g_Sys.temp_low = temp;
-		AT24C02_WriteByte(EE_ADDR_TH,(unsigned char)g_Sys.temp_low);
+		AT24C02_WriteByte(EE_ADDR_TL,(unsigned char)g_Sys.temp_low);
 		printf("TL set to %d\n", temp);
 	}	
 	// 查询状态：OUERY 
